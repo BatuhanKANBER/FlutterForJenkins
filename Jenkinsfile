@@ -18,7 +18,7 @@ pipeline {
         }
         stage ('Flutter Build APK') {
             steps {
-                sh "flutter build apk --split-per-abi"
+                sh "flutter build apk --split-per-abi --output-dir=build/app/outputs/flutter-apk"
             }
         }
         stage('Cleanup') {
