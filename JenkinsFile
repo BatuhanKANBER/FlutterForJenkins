@@ -1,0 +1,47 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage ('Checkout') {
+            steps {
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'github', url: 'git@github.com:BatuhanKANBER/FlutterForJenkins.git']])
+            }
+        }
+        stage('Check for Changes') {
+            steps {
+                script {
+                    if(currentBuild.changeSets.size() > 0) {
+                        //There are changes
+                        sh "git tag -a v1.${BUILD_NUMBER} -m 'Version 1.${BUILD_NUMBER}'"
+                        sh 'git push origin --tags'
+                        echo 'Depoda değişiklik görüldü, yeni tag oluşturuldu.'
+                    }
+                    else {
+                        //No changes
+                        echo 'Depoda herhangi bir değişiklik gözlemlenemedi.'
+                    }
+                }
+            }
+        }
+        stage ('Doctor') {
+            steps {
+                sh 'flutter doctor -v'
+            }
+        }
+        stage ('Test Codes') {
+            steps  {
+                sh 'flutter test --coverage test/widget_test.dart'
+            }
+        }
+        stage ('Build Release') {
+            steps {
+                sh 'flutter build apk --release'
+            }
+        }
+    }
+}
