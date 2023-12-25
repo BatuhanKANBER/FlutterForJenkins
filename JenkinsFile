@@ -38,9 +38,14 @@ pipeline {
                 sh 'flutter test --coverage test/widget_test.dart'
             }
         }
-        stage ('Build Release') {
+        stage ('Build Release APK') {
             steps {
                 sh 'flutter build apk --release'
+            }
+        }
+        stage ('Build Release Web') {
+            steps {
+                sh 'flutter build web --release'
             }
         }
     }
